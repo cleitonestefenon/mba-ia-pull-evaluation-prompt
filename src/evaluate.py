@@ -105,7 +105,8 @@ def create_evaluation_dataset(client: Client, dataset_name: str, jsonl_path: str
 def pull_prompt_from_langsmith(prompt_name: str) -> ChatPromptTemplate:
     try:
         print(f"   Puxando prompt do LangSmith Hub: {prompt_name}")
-        prompt = hub.pull(prompt_name)
+        ls_client = Client()
+        prompt = ls_client.pull_prompt(prompt_name, dangerously_pull_public_prompt=True)
         print(f"   ✓ Prompt carregado com sucesso")
         return prompt
 
@@ -290,6 +291,8 @@ def main():
         required_vars.append("OPENAI_API_KEY")
     elif provider in ["google", "gemini"]:
         required_vars.append("GOOGLE_API_KEY")
+    elif provider == "anthropic":
+        required_vars.append("ANTHROPIC_API_KEY")
 
     if not check_env_vars(required_vars):
         return 1
